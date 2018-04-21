@@ -4,7 +4,7 @@
  * Copyright (c) 2017 Monero Integrations
  * Copyright (c) 2017 Phillip Whelan
  */
-class Sumo_Payment
+class Roi_Payment
 {
     private $payment_id;
     private $gw;
@@ -19,7 +19,7 @@ class Sumo_Payment
         {
             // TODO: make a UNIQUE PRIMARY KEY on both order_id and payment_id
             $wpdb->query("
-                CREATE TABLE IF NOT EXISTS {$wpdb->prefix}sumo_payments (
+                CREATE TABLE IF NOT EXISTS {$wpdb->prefix}roi_payments (
                     order_id INT,
                     payment_id char(16) UNIQUE PRIMARY KEY
                 )
@@ -27,7 +27,7 @@ class Sumo_Payment
             
             $sql = $wpdb->prepare("
                 SELECT payment_id
-                FROM {$wpdb->prefix}sumo_payments
+                FROM {$wpdb->prefix}roi_payments
                 WHERE order_id = %s
             ", [$order_id]);
             $rows = $wpdb->get_results($sql);
@@ -35,7 +35,7 @@ class Sumo_Payment
             if (count($rows) <= 0) {
                 $this->payment_id = bin2hex(openssl_random_pseudo_bytes(8));
                 $sql = $wpdb->prepare("
-                    INSERT INTO {$wpdb->prefix}sumo_payments
+                    INSERT INTO {$wpdb->prefix}roi_payments
                     (order_id, payment_id)
                     VALUES (%s, %s)
                 ", [$order_id, $this->payment_id]);
@@ -47,7 +47,7 @@ class Sumo_Payment
         } else {
             // TODO: make a UNIQUE PRIMARY KEY on both order_id and payment_id
             $wpdb->query("
-                CREATE TABLE IF NOT EXISTS {$wpdb->prefix}sumo_address_payments (
+                CREATE TABLE IF NOT EXISTS {$wpdb->prefix}roi_address_payments (
                     order_id INT,
                     address_index INT,
                     address char(98) UNIQUE PRIMARY KEY
@@ -56,15 +56,15 @@ class Sumo_Payment
             
             $sql = $wpdb->prepare("
                 SELECT address, address_index
-                FROM {$wpdb->prefix}sumo_address_payments
+                FROM {$wpdb->prefix}roi_address_payments
                 WHERE order_id = %s
             ", [$order_id]);
             $rows = $wpdb->get_results($sql);
             
             if (count($rows) <= 0) {
-                $resp = $gw->sumo_daemon->create_address('order_'.$order_id);
+                $resp = $gw->roi_daemon->create_address('order_'.$order_id);
                 $sql = $wpdb->prepare("
-                    INSERT INTO {$wpdb->prefix}sumo_address_payments
+                    INSERT INTO {$wpdb->prefix}roi_address_payments
                     (order_id, address, address_index)
                     VALUES (%d, %s, %d)
                 ", [$order_id, $resp['address'], $resp['address_index']]);
@@ -89,36 +89,36 @@ class Sumo_Payment
     public function get_uri($amount)
     {
         if ($this->gw->settings["subaddress_payments"] == "no") {
-            $address = $this->gw->settings["sumo_address"];
+            $address = $this->gw->settings["roi_address"];
             if (!isset($address)) {
-                $gw->log->add('Sumo_Gateway', '[ERROR] No SUMO address set for payments');
+                $gw->log->add('Roi_Gateway', '[ERROR] No ROI address set for payments');
                 echo "ERROR: Unable to receive payments, please contact administrator.<br/>";
                 return false;
             }
-            return "sumo:$address?amount=$amount?payment_id=$this->payment_id";
+            return "roi:$address?amount=$amount?payment_id=$this->payment_id";
         } else {
-            return "sumo:$this->subaddress?amount=$amount";
+            return "roi:$this->subaddress?amount=$amount";
         }
     }
     
     public function get_address()
     {
         if ($this->gw->settings["subaddress_payments"] == "no") {
-            $integrated = $this->gw->sumo_daemon->make_integrated_address($this->payment_id);
+            $integrated = $this->gw->roi_daemon->make_integrated_address($this->payment_id);
             if (!isset($integrated)) {
-                $this->log->add('Sumo_Gateway', '[ERROR] Unable to get integrated address');
-                return $this->gw->settings["sumo_address"];;
+                $this->log->add('Roi_Gateway', '[ERROR] Unable to get integrated address');
+                return $this->gw->settings["roi_address"];;
             }
             return $integrated["integrated_address"];
             
-            $address = $this->gw->settings["sumo_address"];
+            $address = $this->gw->settings["roi_address"];
             $address = $this->address;
             if (!isset($address)) {
-                $gw->log->add('Sumo_Gateway', '[ERROR] No SUMO address set for payments');
+                $gw->log->add('Roi_Gateway', '[ERROR] No ROI address set for payments');
                 echo "ERROR: Unable to receive payments, please contact administrator.<br/>";
                 return false;
             }
-            return "sumo:$address?amount=$amount?payment_id=$this->payment_id";
+            return "roi:$address?amount=$amount?payment_id=$this->payment_id";
         } else {
             return $this->address;
         }
@@ -132,14 +132,14 @@ class Sumo_Payment
          */
         $amount_atomic_units = $amount * 1000000000;
         if ($this->gw->settings["subaddress_payments"] == "no") {
-            $get_payments_method = $this->gw->sumo_daemon->get_payments($this->payment_id);
+            $get_payments_method = $this->gw->roi_daemon->get_payments($this->payment_id);
             if (isset($get_payments_method["payments"][0]["amount"])) {
                 if ($get_payments_method["payments"][0]["amount"] >= $amount_atomic_units) {
                     return true;
                 }
             }
         } else {
-            $payments = $this->gw->sumo_daemon->get_transfers("in", true, ["subaddr_indices" => [(int)$this->address_index]]);
+            $payments = $this->gw->roi_daemon->get_transfers("in", true, ["subaddr_indices" => [(int)$this->address_index]]);
             $owed = $amount_atomic_units;
             //print "OWING: ".($owed / 1000000000)."<br/>";
             if (!isset($payments["in"])) return false;
