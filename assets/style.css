@@ -1,4 +1,4 @@
-.container-sumo-payment {
+.container-roi-payment {
 font-family: 'Montserrat', sans-serif;
 
     background-color: #fff;
@@ -14,26 +14,26 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 
 
 
-.header-sumo-payment {
+.header-roi-payment {
     height: 74px;
 	background-color: #2d9cdb;
 }
 
-.logo-sumo img {
+.logo-roi img {
     margin-top: 6px;
 }
 
-span.logo-sumo {
+span.logo-roi {
     float: left;
 }
 
-span.sumo-payment-text-header {
+span.roi-payment-text-header {
     float: left;
     margin-left: 16px;
     color: #fff;
 }
 
-.footer-sumo-payment {
+.footer-roi-payment {
     background-color: #2d9cdb;
     color: #fff;
     text-align: right;
@@ -45,22 +45,22 @@ span.sumo-payment-text-header {
 }
 
 
-.footer-sumo-payment a {
+.footer-roi-payment a {
     color: #fff;
 	font-size: 0.8rem;
 }
 
 
 
-.sumo-qr-code {
+.roi-qr-code {
     float: left;
 }
 
-.sumo-address {
+.roi-address {
     float: left;
 }
 
-.sumo-amount-send {
+.roi-amount-send {
     float: left;
 }
 
@@ -70,7 +70,7 @@ span.sumo-payment-text-header {
 
 
 
-.sumo-amount-box {
+.roi-amount-box {
     background-color: #fff;
     padding: 8px;
     border-style: solid;
@@ -79,11 +79,11 @@ span.sumo-payment-text-header {
     float: left;
 }
 
-span.sumo-label {
+span.roi-label {
     display: block;
 }
 
-.sumo-box {
+.roi-box {
     float: left;
     background-color: #2d9cdb;
     border-style: solid;
@@ -96,7 +96,7 @@ span.sumo-label {
 }
 
 
-.sumo-address-box {
+.roi-address-box {
     word-wrap: break-word;
 	    background-color: #fff;
     padding: 8px;
@@ -105,11 +105,11 @@ span.sumo-label {
     border-color: #ccc;
 }
 
-.sumo-integrated-address {
+.roi-integrated-address {
     float: left;
 }
 
-.sumo-integrated-address-box {
+.roi-integrated-address-box {
     word-wrap: break-word;
     background-color: #fff;
     padding: 8px;
@@ -117,12 +117,12 @@ span.sumo-label {
     border-width: 1px;
     border-color: #ccc;
 }
-.sumo-qr-code-box img {
+.roi-qr-code-box img {
     width: 100%;
     
 }
 
-.sumo-qr-code-box {
+.roi-qr-code-box {
     width: fit-content;
     padding: 8px;
     border-color: #ccc;
@@ -132,26 +132,26 @@ span.sumo-label {
 }
 
 
-.content-sumo-payment {
+.content-roi-payment {
     padding: 8px;
     background-color: #f9f9f9;
 
 }
 
 
-.sumo-qr-code {
+.roi-qr-code {
       padding: 8px;
 }
 
-.sumo-address {
+.roi-address {
         padding: 8px;
 }
 
-.sumo-amount-send {
+.roi-amount-send {
        padding: 8px;
 }
 
-.sumo-payment-text-header h2 {
+.roi-payment-text-header h2 {
     font-size: 1.2rem;
     margin: 0px;
     line-height: 70px;
@@ -160,7 +160,7 @@ textarea {
     width: 95%;
 }
 
-.sumo-box .SumoTooltip {
+.roi-box .RoiTooltip {
     visibility: hidden;
     width: 140px;
     background-color: #555;
@@ -177,7 +177,7 @@ textarea {
     transition: opacity 0.3s;
 }
 
-.sumo-box .SumoTooltip::after {
+.roi-box .RoiTooltip::after {
     content: '';
     position: absolute;
     top: 100%;
@@ -188,7 +188,7 @@ textarea {
     border-color: #555 transparent transparent transparent;
 }
 
-.sumo-box:hover .SumoTooltip {
+.roi-box:hover .RoiTooltip {
     visibility: visible;
     opacity: 1;
 }
@@ -203,18 +203,18 @@ textarea {
 
 }
 
-.sumo-qr-code {
+.roi-qr-code {
     width: 40%;
 }
 
-.sumo-address {
+.roi-address {
     width: 60%;
 }
 
-.sumo-amount-send {
+.roi-amount-send {
     width: 100%;
 }
-.logo-sumo img {
+.logo-roi img {
     margin-top: 6px;
     margin-left: 32px;
 }
@@ -223,7 +223,7 @@ textarea {
 
 @media only screen and (min-width: 100px) and (max-width: 700px) {
 
-.logo-sumo img {
+.logo-roi img {
     margin-top: 6px;
     margin-left: 8px;
 }
@@ -235,20 +235,20 @@ textarea {
 
 }
 
-.sumo-qr-code-box {
+.roi-qr-code-box {
     width: 100%;
 }
 
-.sumo-address {
+.roi-address {
     width: 100%;
     
 }
 
-.sumo-amount-send {
+.roi-amount-send {
     width: 100%;
 }
 
-.sumo-integrated-address{
+.roi-integrated-address{
         width:100%;
 }
 
