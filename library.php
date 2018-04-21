@@ -11,9 +11,10 @@
  * http://implix.com
  * Modified to work with monero-rpc wallet by Serhack and cryptochangements
  * Modified to work with sumo-rpc wallet by Phillip Whelan
+ * Modified to work with roi-rpc wallet by DisasterFaster
  * This code isn't for Dark Net Markets, please report them to Authority!
  */
-class Sumo_Library
+class Roi_Library
 {
     protected $url = null, $is_debug = false, $parameters_structure = 'array';
     protected $curl_options = array(
