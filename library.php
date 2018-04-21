@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright (c) 2017 Monero Integrations
  * library.php
@@ -11,9 +10,10 @@
  * http://implix.com
  * Modified to work with monero-rpc wallet by Serhack and cryptochangements
  * Modified to work with sumo-rpc wallet by Phillip Whelan
+ * Modified to work with roi-rpc wallet by DisasterFaster
  * This code isn't for Dark Net Markets, please report them to Authority!
  */
-class Sumo_Library
+class Roi_Library
 {
     protected $url = null, $is_debug = false, $parameters_structure = 'array';
     protected $curl_options = array(
@@ -34,30 +34,25 @@ class Sumo_Library
         502 => '502 Bad Gateway',
         503 => '503 Service Unavailable'
     );
-
     public function __construct($pUrl, $pUser, $pPass)
     {
         $this->validate(false === extension_loaded('curl'), 'The curl extension must be loaded to use this class!');
         $this->validate(false === extension_loaded('json'), 'The json extension must be loaded to use this class!');
-
         $this->url = $pUrl;
         $this->username = $pUser;
         $this->password = $pPass;
     }
-
     public function validate($pFailed, $pErrMsg)
     {
         if ($pFailed) {
             echo $pErrMsg;
         }
     }
-
     public function setDebug($pIsDebug)
     {
         $this->is_debug = !empty($pIsDebug);
         return $this;
     }
-
     /*  public function setParametersStructure($pParametersStructure)
       {
           if (in_array($pParametersStructure, array('array', 'object')))
@@ -70,7 +65,6 @@ class Sumo_Library
           }
           return $this;
       } */
-
     public function setCurlOptions($pOptionsArray)
     {
         if (is_array($pOptionsArray)) {
@@ -80,25 +74,21 @@ class Sumo_Library
         }
         return $this;
     }
-
     public function _print($json)
     {
         $json_encoded = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         echo $json_encoded;
     }
-
     public function address()
     {
         $address = $this->_run('getaddress');
         return $address;
     }
-
     public function _run($method, $params = null)
     {
         $result = $this->request($method, $params);
         return $result; //the result is returned as an array
     }
-
     private function request($pMethod, $pParams)
     {
         static $requestId = 0;
@@ -135,7 +125,6 @@ class Sumo_Library
         }
         return $responseDecoded['result'];
     }
-
     protected function debug($pAdd, $pShow = false)
     {
         static $debug, $startTime;
@@ -159,7 +148,6 @@ class Sumo_Library
             $debug = $startTime = null;
         }
     }
-
     protected function & getResponse(&$pRequest)
     {
         // do the actual connection
@@ -175,7 +163,6 @@ class Sumo_Library
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         if (!curl_setopt_array($ch, $this->curl_options)) {
             throw new RuntimeException('Error while setting curl options');
@@ -195,9 +182,7 @@ class Sumo_Library
         curl_close($ch);
         return $response;
     }
-
     //prints result as json
-
     function getJsonLastErrorMsg()
     {
         if (!function_exists('json_last_error_msg')) {
@@ -215,7 +200,6 @@ class Sumo_Library
                 return array_key_exists($error, $errors) ? $errors[$error] : 'Unknown error (' . $error . ')';
             }
         }
-
         // Fix PHP 5.2 error caused by missing json_last_error function
         if (function_exists('json_last_error')) {
             return json_last_error() ? json_last_error_msg() : null;
@@ -223,56 +207,47 @@ class Sumo_Library
             return null;
         }
     }
-
     /* 
      * The following functions can all be called to interact with the monero rpc wallet
      * They will majority of them will return the result as an array
      * Example: $daemon->address(); where $daemon is an instance of this class, will return the wallet address as string within an array
      */
-
     public function getbalance()
     {
         $balance = $this->_run('getbalance');
         return $balance;
     }
-
     public function getheight()
     {
         $height = $this->_run('getheight');
         return $height;
     }
-
     public function incoming_transfer($type)
     {
         $incoming_parameters = array('transfer_type' => $type);
         $incoming_transfers = $this->_run('incoming_transfers', $incoming_parameters);
         return $incoming_transfers;
     }
-
     public function get_transfers($input_type, $input_value, $filters = [])
     {
         $get_parameters = array($input_type => $input_value) + $filters;
         $get_transfers = $this->_run('get_transfers', $get_parameters);
         return $get_transfers;
     }
-
     public function view_key()
     {
         $query_key = array('key_type' => 'view_key');
         $query_key_method = $this->_run('query_key', $query_key);
         return $query_key_method;
     }
-
     public function make_integrated_address($payment_id)
     {
         $integrate_address_parameters = array('payment_id' => $payment_id);
         $integrate_address_method = $this->_run('make_integrated_address', $integrate_address_parameters);
         return $integrate_address_method;
     }
-
     /* A payment id can be passed as a string
        A random payment id will be generatd if one is not given */
-
     public function split_integrated_address($integrated_address)
     {
         if (!isset($integrated_address)) {
@@ -283,24 +258,20 @@ class Sumo_Library
             return $split_methods;
         }
     }
-
     public function make_uri($address, $amount, $recipient_name = null, $description = null)
     {
         // If I pass 1, it will be 0.0000001 xmr. Then
         $new_amount = $amount * 100000000;
-
         $uri_params = array('address' => $address, 'amount' => $new_amount, 'payment_id' => '', 'recipient_name' => $recipient_name, 'tx_description' => $description);
         $uri = $this->_run('make_uri', $uri_params);
         return $uri;
     }
-
     public function parse_uri($uri)
     {
         $uri_parameters = array('uri' => $uri);
         $parsed_uri = $this->_run('parse_uri', $uri_parameters);
         return $parsed_uri;
     }
-
     public function transfer($amount, $address, $mixin = 4)
     {
         $new_amount = $amount * 1000000000000;
@@ -309,21 +280,18 @@ class Sumo_Library
         $transfer_method = $this->_run('transfer', $transfer_parameters);
         return $transfer_method;
     }
-
     public function get_payments($payment_id)
     {
         $get_payments_parameters = array('payment_id' => $payment_id);
         $get_payments = $this->_run('get_payments', $get_payments_parameters);
         return $get_payments;
     }
-
     public function get_bulk_payments($payment_id, $min_block_height)
     {
         $get_bulk_payments_parameters = array('payment_id' => $payment_id, 'min_block_height' => $min_block_height);
         $get_bulk_payments = $this->_run('get_bulk_payments', $get_bulk_payments_parameters);
         return $get_bulk_payments;
     }
-
     public function create_address($label = null)
     {
         $create_address_parameters = $label == null ? array() : array('label' => $label);
