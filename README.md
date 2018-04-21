@@ -15,7 +15,7 @@ Wordpress is the backend tool that is needed to use WooCommerce and this ROI Coi
 This ROI Coin plugin is an extension of WooCommerce, which works with WordPress
 
 ## Step 1: Activating the plugin
-* Downloading: First of all, you will need to download the plugin. You can download the latest release as a .zip file from https://github.com/ If you wish, you can also download the latest source code from GitHub. This can be done with the command `git clone https://github.com/pwhelan/sumowp.git` or can be downloaded as a zip file from the GitHub web page.
+* Downloading: First of all, you will need to download the plugin. You can download the latest release as a .zip file from https://github.com/ If you wish, you can also download the latest source code from GitHub. This can be done with the command `git clone https://github.com/` or can be downloaded as a zip file from the GitHub web page.
 
 * Unzip the file ROIcoinwp_release.zip if you downloaded the zip from the releases page [here](https://github.com/).
 
