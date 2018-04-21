@@ -1,26 +1,26 @@
 <?php
 
 /* 
- * Main Gateway of Sumo using a daemon online 
+ * Main Gateway of ROI using a daemon online 
  * Authors: Serhack and cryptochangements
  * Copyright (c) 2017 Monero Integrations
  * Copyright (c) 2017 Phillip Whelan
  */
 
 
-class Sumo_Gateway extends WC_Payment_Gateway
+class Roi_Gateway extends WC_Payment_Gateway
 {
     private $reloadTime = 30000;
     private $discount;
     private $confirmed = false;
-    public $sumo_daemon;
+    public $roi_daemon;
 
     function __construct()
     {
-        $this->id = "sumo_gateway";
-        $this->method_title = __("Sumokoin Gateway", 'sumo_gateway');
-        $this->method_description = __("Sumokoin Payment Gateway plugin for WooCommerce. You can find more information about this payment gateway on our website. You'll need a daemon online for your address.", 'sumo_gateway');
-        $this->title = __("Sumokoin Gateway", 'sumo_gateway');
+        $this->id = "roi_gateway";
+        $this->method_title = __("Roicoin Gateway", 'roi_gateway');
+        $this->method_description = __("Roicoin Payment Gateway plugin for WooCommerce. You can find more information about this payment gateway on our website. You'll need a daemon online for your address.", 'sumo_gateway');
+        $this->title = __("Roicoin Gateway", 'roi_gateway');
         $this->version = "0.3";
         //
         $this->icon = apply_filters('woocommerce_offline_icon', '');
@@ -31,7 +31,7 @@ class Sumo_Gateway extends WC_Payment_Gateway
         $this->init_form_fields();
         $this->host = $this->get_option('daemon_host');
         $this->port = $this->get_option('daemon_port');
-        $this->address = $this->get_option('sumo_address');
+        $this->address = $this->get_option('roi_address');
         $this->username = $this->get_option('username');
         $this->password = $this->get_option('password');
         $this->discount = $this->get_option('discount');
@@ -55,99 +55,99 @@ class Sumo_Gateway extends WC_Payment_Gateway
             add_filter('woocommerce_currency_symbol', [$this, 'add_my_currency_symbol'], 10, 2);
             add_action('woocommerce_email_before_order_table', array($this, 'email_instructions'), 10, 2);
         }
-        $this->sumo_daemon = new Sumo_Library($this->host . ':' . $this->port . '/json_rpc', $this->username, $this->password);
+        $this->roi_daemon = new Roi_Library($this->host . ':' . $this->port . '/json_rpc', $this->username, $this->password);
     }
 
     public function get_icon()
     {
-        return apply_filters('woocommerce_gateway_icon', "<img src='".plugins_url('/../assets/sumo-logo.png', __FILE__ )."'>");
+        return apply_filters('woocommerce_gateway_icon', "<img src='".plugins_url('/../assets/roi-logo.png', __FILE__ )."'>");
     }
 
     public function init_form_fields()
     {
         $this->form_fields = array(
             'enabled' => array(
-                'title' => __('Enable / Disable', 'sumo_gateway'),
-                'label' => __('Enable this payment gateway', 'sumo_gateway'),
+                'title' => __('Enable / Disable', 'roi_gateway'),
+                'label' => __('Enable this payment gateway', 'roi_gateway'),
                 'type' => 'checkbox',
                 'default' => 'no'
             ),
 
             'title' => array(
-                'title' => __('Title', 'sumo_gateway'),
+                'title' => __('Title', 'roi_gateway'),
                 'type' => 'text',
-                'desc_tip' => __('Payment title the customer will see during the checkout process.', 'sumo_gateway'),
-                'default' => __('Sumokoin Payment', 'sumo_gateway')
+                'desc_tip' => __('Payment title the customer will see during the checkout process.', 'roi_gateway'),
+                'default' => __('Roicoin Payment', 'roi_gateway')
             ),
             'description' => array(
-                'title' => __('Description', 'sumo_gateway'),
+                'title' => __('Description', 'roi_gateway'),
                 'type' => 'textarea',
-                'desc_tip' => __('Payment description the customer will see during the checkout process.', 'sumo_gateway'),
-                'default' => __('Pay securely using Sumo.', 'sumo_gateway')
+                'desc_tip' => __('Payment description the customer will see during the checkout process.', 'roi_gateway'),
+                'default' => __('Pay securely using Roi.', 'roi_gateway')
 
             ),
-            'sumo_address' => array(
-                'title' => __('Sumokoin Address', 'sumo_gateway'),
+            'roi_address' => array(
+                'title' => __('Roicoin Address', 'roi_gateway'),
                 'label' => __('Useful for people that have not a daemon online'),
                 'type' => 'text',
-                'desc_tip' => __('Sumo Wallet Address', 'sumo_gateway')
+                'desc_tip' => __('Roi Wallet Address', 'roi_gateway')
             ),
             'daemon_host' => array(
-                'title' => __('Wallet RPC Host/IP', 'sumo_gateway'),
+                'title' => __('Wallet RPC Host/IP', 'roi_gateway'),
                 'type' => 'text',
-                'desc_tip' => __('This is the Daemon Host/IP to authorize the payment with port', 'sumo_gateway'),
+                'desc_tip' => __('This is the Daemon Host/IP to authorize the payment with port', 'roi_gateway'),
                 'default' => 'localhost',
             ),
             'daemon_port' => array(
-                'title' => __('Wallet RPC port', 'sumo_gateway'),
+                'title' => __('Wallet RPC port', 'roi_gateway'),
                 'type' => 'text',
-                'desc_tip' => __('This is the Daemon Host/IP to authorize the payment with port', 'sumo_gateway'),
+                'desc_tip' => __('This is the Daemon Host/IP to authorize the payment with port', 'roi_gateway'),
                 'default' => '19733',
             ),
             'username' => array(
-                'title' => __('Sumo Wallet username', 'sumo_gateway'),
-                'desc_tip' => __('This is the username that you used with your sumo wallet-rpc', 'sumo_gateway'),
-                'description' => __('You can leave this field empty if you did not set any username', 'sumo_gateway'),
+                'title' => __('Roi Wallet username', 'roi_gateway'),
+                'desc_tip' => __('This is the username that you used with your roi wallet-rpc', 'roi_gateway'),
+                'description' => __('You can leave this field empty if you did not set any username', 'roi_gateway'),
                 'type' => __('text'),
-                'default' => __('username', 'sumo_gateway'),
+                'default' => __('username', 'roi_gateway'),
 
             ),
             'password' => array(
-                'title' => __('Sumo wallet RPC password', 'sumo_gateway'),
-                'desc_tip' => __('This is the password that you used to secure your sumo wallet-rpc', 'sumo_gateway'),
-                'description' => __('You can leave this field empty if you did not set any password', 'sumo_gateway'),
+                'title' => __('Roi wallet RPC password', 'roi_gateway'),
+                'desc_tip' => __('This is the password that you used to secure your roi wallet-rpc', 'roi_gateway'),
+                'description' => __('You can leave this field empty if you did not set any password', 'roi_gateway'),
                 'type' => __('text'),
                 'default' => ''
 
             ),
             'discount' => array(
-                'title' => __('% discount for using SUMO', 'sumo_gateway'),
+                'title' => __('% discount for using ROI', 'roi_gateway'),
 
-                'desc_tip' => __('Provide a discount to your customers for making a private payment with SUMO!', 'sumo_gateway'),
-                'description' => __('Do you want to spread the word about Sumokoin? Offer a small discount! Leave this empty if you do not wish to provide a discount', 'sumo_gateway'),
+                'desc_tip' => __('Provide a discount to your customers for making a private payment with ROI!', 'roi_gateway'),
+                'description' => __('Do you want to spread the word about ROI Coin? Offer a small discount! Leave this empty if you do not wish to provide a discount', 'roi_gateway'),
                 'type' => __('text'),
                 'default' => '5%'
 
             ),
             'environment' => array(
-                'title' => __(' Test Mode', 'sumo_gateway'),
-                'label' => __('Enable Test Mode', 'sumo_gateway'),
+                'title' => __(' Test Mode', 'roi_gateway'),
+                'label' => __('Enable Test Mode', 'roi_gateway'),
                 'type' => 'checkbox',
-                'description' => __('Check this box if you are using testnet', 'sumo_gateway'),
+                'description' => __('Check this box if you are using testnet', 'roi_gateway'),
                 'default' => 'no'
             ),
             'onion_service' => array(
-                'title' => __(' Onion Service', 'sumo_gateway'),
-                'label' => __('Enable Onion Service', 'sumo_gateway'),
+                'title' => __(' Onion Service', 'roi_gateway'),
+                'label' => __('Enable Onion Service', 'roi_gateway'),
                 'type' => 'checkbox',
-                'description' => __('Check this box if you are running on an Onion Service (Suppress SSL errors)', 'sumo_gateway'),
+                'description' => __('Check this box if you are running on an Onion Service (Suppress SSL errors)', 'roi_gateway'),
                 'default' => 'no'
             ),
             'subaddress_payments' => array(
-                'title' => __('Subaddress Payments', 'sumo_gateway'),
-                'label' => __('Enable payments to subdaddresses', 'sumo_gateway'),
+                'title' => __('Subaddress Payments', 'roi_gateway'),
+                'label' => __('Enable payments to subdaddresses', 'roi_gateway'),
                 'type' => 'checkbox',
-                'description' => __('Check this box if you wish to receive payments via Subaddresses instead of Payment IDs', 'sumo_gateway'),
+                'description' => __('Check this box if you wish to receive payments via Subaddresses instead of Payment IDs', 'roi_gateway'),
                 'default' => 'no'
             ),
         );
@@ -155,15 +155,15 @@ class Sumo_Gateway extends WC_Payment_Gateway
 
     public function add_my_currency($currencies)
     {
-        $currencies['SUMO'] = __('Sumo', 'woocommerce');
+        $currencies['ROI'] = __('Roi', 'woocommerce');
         return $currencies;
     }
 
     function add_my_currency_symbol($currency_symbol, $currency)
     {
         switch ($currency) {
-            case 'SUMO':
-                $currency_symbol = 'SUMO';
+            case 'ROI':
+                $currency_symbol = 'ROI';
                 break;
         }
         return $currency_symbol;
@@ -171,25 +171,25 @@ class Sumo_Gateway extends WC_Payment_Gateway
 
     public function admin_options()
     {
-        $this->log->add('Sumo_gateway', '[SUCCESS] Sumokoin Settings OK');
+        $this->log->add('Roi_gateway', '[SUCCESS] ROI Coin Settings OK');
 
-        echo "<h1>Sumo Payment Gateway</h1>";
+        echo "<h1>ROI Payment Gateway</h1>";
 
-        echo "<p>Welcome to Sumokoin payment plugin for WooCommerce. Getting started: Make a connection with Sumokoin daemon. For more info, see <a href=\"https://github.com/sumoweb/sumowp/blob/master/README.md\"> our GitHub page</a>";
+        echo "<p>Welcome to ROI Coin payment plugin for WooCommerce. Getting started: Make a connection with ROI Coin daemon. For more info, see <a href=\"https://github.com/sumoweb/sumowp/blob/master/README.md\"> our GitHub page</a>";
         echo "<div style='border:1px solid #DDD;padding:5px 10px;font-weight:bold;color:#223079;background-color:#9ddff3;'>";
         $this->getamountinfo();
         echo "</div>";
         echo "<table class='form-table'>";
         $this->generate_settings_html();
         echo "</table>";
-        echo "<h4>Secure your wallet RPC daemon! Learn more about using a password with the Sumokoin wallet RPC <a href=\"https://github.com/sumoweb/sumowp/blob/master/README.md\">here</a></h4>";
+        echo "<h4>Secure your wallet RPC daemon! Learn more about using a password with the ROI Coin wallet RPC <a href=\"https://github.com/sumoweb/sumowp/blob/master/README.md\">here</a></h4>";
     }
 
     public function getamountinfo()
     {
-        $wallet_amount = $this->sumo_daemon->getbalance();
+        $wallet_amount = $this->roi_daemon->getbalance();
         if (!isset($wallet_amount)) {
-            $this->log->add('Sumo_gateway', '[ERROR] No connection with daemon');
+            $this->log->add('Roi_gateway', '[ERROR] No connection with daemon');
             $wallet_amount['balance'] = "0";
             $wallet_amount['unlocked_balance'] = "0";
         }
@@ -200,15 +200,15 @@ class Sumo_Gateway extends WC_Payment_Gateway
             $unlocked_wallet_amount = $wallet_amount['unlocked_balance'] / 1000000000;
             $unlocked_amount_rounded = round($unlocked_wallet_amount, 6);
     
-            echo "Your balance is: " . $real_amount_rounded . " SUMO </br>";
-            echo "Unlocked balance: " . $unlocked_amount_rounded . " SUMO </br>";
+            echo "Your balance is: " . $real_amount_rounded . " ROI </br>";
+            echo "Unlocked balance: " . $unlocked_amount_rounded . " ROI </br>";
         }
     }
 
     public function process_payment($order_id)
     {
         $order = wc_get_order($order_id);
-        $order->update_status('on-hold', __('Awaiting offline payment', 'sumo_gateway'));
+        $order->update_status('on-hold', __('Awaiting offline payment', 'roi_gateway'));
         // Reduce stock levels
         $order->reduce_order_stock();
 
@@ -230,8 +230,8 @@ class Sumo_Gateway extends WC_Payment_Gateway
         if ($this->check_subaddress_with_subaddress_payments() != TRUE) {
             echo "<div class=\"error\"><p>Do not mix subdaddresses with subaddress payments.</p></div>";
         }
-        if ($this->check_sumo_address() != TRUE) {
-            echo "<div class=\"error\"><p>Your Sumokoin address doesn't seem to be valid. Check that you've inserted it correctly.</p></div>";
+        if ($this->check_roi_address() != TRUE) {
+            echo "<div class=\"error\"><p>Your ROI Coin address doesn't seem to be valid. Check that you've inserted it correctly.</p></div>";
         }
     }
 
@@ -240,7 +240,7 @@ class Sumo_Gateway extends WC_Payment_Gateway
 
     public function check_subaddress_with_subaddress_payments()
     {
-        $addr = $this->settings['sumo_address'];
+        $addr = $this->settings['roi_address'];
         if ($this->settings['subaddress_payments'] == "yes")
         {
             if ($this->settings['environment'] == "no") {
@@ -257,11 +257,11 @@ class Sumo_Gateway extends WC_Payment_Gateway
         return true;
     }
     
-    public function check_sumo_address()
+    public function check_roi_address()
     {
         require_once __DIR__ . '/cryptonote.php';
         
-        $addr = $this->settings['sumo_address'];       
+        $addr = $this->settings['roi_address'];       
         if (function_exists('bcadd'))
         {
             $prefixes = $this->settings['environment'] == "no" ? 
@@ -295,8 +295,8 @@ class Sumo_Gateway extends WC_Payment_Gateway
         $amount = floatval(preg_replace('#[^\d.]#', '', $order->get_total()));
         $payment = $this->get_payment($order_id);
         $currency = $order->get_currency();
-        $amount_sumo2 = $this->changeto($amount, $currency, $order_id);
-        if ($amount_sumo2 <= 0)
+        $amount_roi2 = $this->changeto($amount, $currency, $order_id);
+        if ($amount_roi2 <= 0)
         {
             echo "ERROR: Temporarily unable to get exchange rate<br/>";
             echo "
@@ -304,19 +304,19 @@ class Sumo_Gateway extends WC_Payment_Gateway
             return;
         }
         
-        $uri = $payment->get_uri($amount_sumo2);
-        $this->confirmed = $payment->verify($order, $amount_sumo2);
+        $uri = $payment->get_uri($amount_roi2);
+        $this->confirmed = $payment->verify($order, $amount_roi2);
         $message = "We are waiting for your payment to be confirmed";
 	
 	$order->update_meta_data( "Address", $payment->get_address());
-        $order->update_meta_data( "Amount requested (SUMO)", $amount_sumo2);
+        $order->update_meta_data( "Amount requested (ROI)", $amount_roi2);
         $order->save();
         
         if ($this->confirmed) {
             $message = "Payment has been received and confirmed. Thanks!";
-            $this->log->add('Sumo_gateway', '[SUCCESS] Payment has been recorded. Congratulations!');
+            $this->log->add('Roi_gateway', '[SUCCESS] Payment has been recorded. Congratulations!');
             $order = wc_get_order($order_id);
-            $order->update_status('completed', __('Payment has been received', 'sumo_gateway'));
+            $order->update_status('completed', __('Payment has been received', 'roi_gateway'));
             $this->reloadTime = 3000000000000; // Greatly increase the reload time as it is no longer needed
             
             $color = "006400";
@@ -332,27 +332,27 @@ class Sumo_Gateway extends WC_Payment_Gateway
         <link href='".plugins_url('/../assets/style.css', __FILE__)."' rel='stylesheet'>
         <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.0.8/css/all.css' integrity='sha384-3AB7yXWz4OeoZcPbieVW64vVXEwADiYyAEhwilzWsLw+9FgqpyjjStpPnpBO8o8S' crossorigin='anonymous'>
             <script>
-            function SumoCopy() {
-            var copyText = document.getElementById('sumo-amount');
+            function RoiCopy() {
+            var copyText = document.getElementById('roi-amount');
             copyText.select();
             document.execCommand('Copy');
   
-            var tooltip = document.getElementById('SumoTooltipAmount');
+            var tooltip = document.getElementById('RoiTooltipAmount');
             tooltip.innerHTML = 'Copied: ' + copyText.value;
             }
             function AddressCopy() {
-            var copyText = document.getElementById('sumo-address');
+            var copyText = document.getElementById('roi-address');
             copyText.select();                                      
             document.execCommand('Copy'); 
-            var tooltip = document.getElementById('SumoTooltipAddress');
+            var tooltip = document.getElementById('RoiTooltipAddress');
             tooltip.innerHTML = 'Copied: ' + copyText.value;
             }
-            function outSUMO() {
-            var tooltip = document.getElementById('SumoTooltipAmount');
+            function outROI() {
+            var tooltip = document.getElementById('RoiTooltipAmount');
             tooltip.innerHTML = 'Copy to clipboard';
             }
             function outAddress() {
-            var tooltip = document.getElementById('SumoTooltipAddress');
+            var tooltip = document.getElementById('RoiTooltipAddress');
             tooltip.innerHTML = 'Copy to clipboard';
             }
             </script>
@@ -362,38 +362,38 @@ class Sumo_Gateway extends WC_Payment_Gateway
             <body>
             <!-- page container  -->
             <div class='page-container'>
-            <!-- sumo container payment box -->
-            <div class='container-sumo-payment'>
+            <!-- roi container payment box -->
+            <div class='container-roi-payment'>
             <!-- header -->
-            <div class='header-sumo-payment'>
-            <span class='logo-sumo'><img src='".plugins_url('/../assets/sumo-logo.png', __FILE__ )."'/></span>
-            <span class='sumo-payment-text-header'><h2>SUMO PAYMENT</h2></span>
+            <div class='header-roi-payment'>
+            <span class='logo-roi'><img src='".plugins_url('/../assets/sumo-logo.png', __FILE__ )."'/></span>
+            <span class='sumo-payment-text-header'><h2>ROI PAYMENT</h2></span>
             </div>
             <!-- end header -->
-            <!-- sumo content box -->
+            <!-- roi content box -->
             <div class='content-xmr-payment'>
-            <div class='sumo-amount-send'>
-            <span class='sumo-label'>Send:</span>
-            <input class='sumo-amount-box' id='sumo-amount' type='text' value='".$amount_sumo2."' readonly><div class='sumo-box' onclick='SumoCopy()' onmouseout='outSUMO()'><i class='far fa-copy'></i> SUMO<span class='SumoTooltip' id='SumoTooltipAmount'>Copy to clipboard</span></div>
+            <div class='roi-amount-send'>
+            <span class='roi-label'>Send:</span>
+            <input class='roi-amount-box' id='roi-amount' type='text' value='".$amount_roi2."' readonly><div class='roi-box' onclick='RoiCopy()' onmouseout='outROI()'><i class='far fa-copy'></i> ROI<span class='RoiTooltip' id='RoiTooltipAmount'>Copy to clipboard</span></div>
             </div>
-            <div class='sumo-address'>
-            <span class='sumo-label'>To this address:</span>
-            <textarea class='sumo-address-box' id='sumo-address' type='text' readonly>".$payment->get_address()."</textarea><div class='sumo-box' onclick='AddressCopy()' style='margin-right:10px' onmouseout='outAddress()'><i class='far fa-copy'></i><span class='SumoTooltip' id='SumoTooltipAddress'>Copy to clipboard</span></div>
+            <div class='roi-address'>
+            <span class='roi-label'>To this address:</span>
+            <textarea class='roi-address-box' id='roi-address' type='text' readonly>".$payment->get_address()."</textarea><div class='roi-box' onclick='AddressCopy()' style='margin-right:10px' onmouseout='outAddress()'><i class='far fa-copy'></i><span class='RoiTooltip' id='RoiTooltipAddress'>Copy to clipboard</span></div>
             </div> 
-            <div class='sumo-qr-code'>
-            <span class='sumo-label'>Or scan QR:</span>
-            <div class='sumo-qr-code-box'><img src='https://api.qrserver.com/v1/create-qr-code/? size=200x200&data=".$uri."' /></div>
+            <div class='roi-qr-code'>
+            <span class='roi-label'>Or scan QR:</span>
+            <div class='roi-qr-code-box'><img src='https://api.qrserver.com/v1/create-qr-code/? size=200x200&data=".$uri."' /></div>
             </div>
             <div class='clear'></div>
             </div>
             <!-- end content box -->
-            <!-- footer sumo payment -->
-            <div class='footer-sumo-payment'>
-            <a href='https://www.sumokoin.org' target='_blank'>Help</a> | <a href='https://www.sumokoin.org' target='_blank'>About Sumo</a>
+            <!-- footer roi payment -->
+            <div class='footer-roi-payment'>
+            <a href='https://roi-coin.com' target='_blank'>Help</a> | <a href='https://roi-coin.com' target='_blank'>About ROI</a>
             </div>
-            <!-- end footer sumo payment -->
+            <!-- end footer roi payment -->
             </div>
-            <!-- end sumo container payment box -->
+            <!-- end roi container payment box -->
             </div>
             <!-- end page container  -->
             </body>
@@ -407,8 +407,8 @@ class Sumo_Gateway extends WC_Payment_Gateway
 
     private function get_payment($order_id)
     {
-        require_once __DIR__ . '/sumo_payment.php';
-        return new Sumo_Payment($this, $order_id);
+        require_once __DIR__ . '/roi_payment.php';
+        return new Roi_Payment($this, $order_id);
     }
 
     private function get_rate($currency, $order_id)
@@ -416,7 +416,7 @@ class Sumo_Gateway extends WC_Payment_Gateway
         global $wpdb;
         // This will create a table named whatever the payment id is inside the database "WordPress"
         $create_table = "
-            CREATE TABLE IF NOT EXISTS {$wpdb->prefix}sumo_order_rates (
+            CREATE TABLE IF NOT EXISTS {$wpdb->prefix}roi_order_rates (
                 order_id char(16) UNIQUE PRIMARY KEY,
                 currency char(3) NOT NULL,
                 rate DECIMAL(10,4) NOT NULL,
@@ -427,7 +427,7 @@ class Sumo_Gateway extends WC_Payment_Gateway
         $wpdb->query($create_table);
         $sql = $wpdb->prepare("
             SELECT count(*) as count 
-            FROM {$wpdb->prefix}sumo_order_rates
+            FROM {$wpdb->prefix}roi_order_rates
             WHERE order_id = %s
         ", [$order_id]);
         $rows_num = $wpdb->get_results($sql);
@@ -435,23 +435,23 @@ class Sumo_Gateway extends WC_Payment_Gateway
         {
             $sql = $wpdb->prepare("
                 SELECT rate 
-                FROM {$wpdb->prefix}sumo_order_rates
+                FROM {$wpdb->prefix}roi_order_rates
                 WHERE order_id = %s
             ", [$order_id]);
             $stored_rate = $wpdb->get_results($sql);
             return $stored_rate[0]->rate; //this will turn the stored rate back into a decimaled number
         }
         
-        $sumo_live_price = $this->retrieveprice($currency);
-        if ($sumo_live_price == -1) return -1;
+        $roi_live_price = $this->retrieveprice($currency);
+        if ($roi_live_price == -1) return -1;
         
         $sql = $wpdb->prepare("
-            INSERT INTO {$wpdb->prefix}sumo_order_rates (order_id, currency, rate)
+            INSERT INTO {$wpdb->prefix}roi_order_rates (order_id, currency, rate)
             VALUES (%s, %s, %f)
-        ", [$order_id, $currency, $sumo_live_price]);
+        ", [$order_id, $currency, $roi_live_price]);
         $wpdb->query($sql);
         
-        return $sumo_live_price;
+        return $roi_live_price;
     }
     
     public function changeto($amount, $currency, $order_id)
@@ -467,7 +467,7 @@ class Sumo_Gateway extends WC_Payment_Gateway
             $rounded_amount = round($final_amount, 9);
         } else {
             $new_amount = $amount / $rate;
-            $rounded_amount = round($new_amount, 9); //the sumokoin wallet can't handle decimals smaller than 0.000000000001
+            $rounded_amount = round($new_amount, 9); //the roi coin wallet can't handle decimals smaller than 0.000000000001
         }
         
         return $rounded_amount;
@@ -479,18 +479,18 @@ class Sumo_Gateway extends WC_Payment_Gateway
 
     public function retrieveprice($currency)
     {
-        $currencies = ['USD', 'EUR', 'CAD', 'GBP', 'INR', 'SUMO'];
+        $currencies = ['USD', 'EUR', 'CAD', 'GBP', 'INR', 'ROI'];
         if (!in_array($currency, $currencies)) $currencies[] = $currency;
         
-        $sumo_price = file_get_contents('https://min-api.cryptocompare.com/data/price?fsym=SUMO&tsyms='.implode(",", $currencies).'&extraParams=sumo_woocommerce');
-        $price = json_decode($sumo_price, TRUE);
+        $roi_price = file_get_contents('https://min-api.cryptocompare.com/data/price?fsym=ROI&tsyms='.implode(",", $currencies).'&extraParams=roi_woocommerce');
+        $price = json_decode($roi_price, TRUE);
         if (!isset($price)) {
-            $this->log->add('Sumo_Gateway', '[ERROR] Unable to get the price of SUMO');
+            $this->log->add('Roi_Gateway', '[ERROR] Unable to get the price of ROI');
             return -1;
         }
         
         if (!isset($price[$currency])) {
-            $this->log->add('Sumo_Gateway', '[ERROR] Unable to retrieve SUMO in currency '.$currency);
+            $this->log->add('Roi_Gateway', '[ERROR] Unable to retrieve ROI in currency '.$currency);
             return -1;
         }
         
@@ -510,14 +510,14 @@ class Sumo_Gateway extends WC_Payment_Gateway
     {
         $host = $this->settings['daemon_host'];
         $port = $this->settings['daemon_port'];
-        $sumo_library = new Sumo($host, $port);
-        if ($sumo_library->works() == true) {
-            echo "<div class=\"notice notice-success is-dismissible\"><p>Everything works! Congratulations and welcome to Sumo. <button type=\"button\" class=\"notice-dismiss\">
+        $roi_library = new Roi($host, $port);
+        if ($roi_library->works() == true) {
+            echo "<div class=\"notice notice-success is-dismissible\"><p>Everything works! Congratulations and welcome to ROI. <button type=\"button\" class=\"notice-dismiss\">
 						<span class=\"screen-reader-text\">Dismiss this notice.</span>
 						</button></p></div>";
 
         } else {
-            $this->log->add('Sumo_gateway', '[ERROR] Plugin can not reach wallet rpc.');
+            $this->log->add('Roi_gateway', '[ERROR] Plugin can not reach wallet rpc.');
             echo "<div class=\" notice notice-error\"><p>Error connecting with daemon, see documentation for more info</p></div>";
         }
     }
